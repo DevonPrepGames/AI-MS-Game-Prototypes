@@ -10,9 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Firebase (compat SDK) for play counts and ratings -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <style>
     :root {
@@ -380,103 +377,25 @@
 
   <script>
     // -------------------------------------------------------------
-    // 1. FIREBASE CONFIGURATION
-    // Paste your values from the Firebase Console. Until you do,
-    // the page works normally but plays and ratings aren't saved.
+    // 1. SETTINGS
+    // CATALOG_URL: the list of courses and games (data/games.json).
+    // STATS_ENDPOINT: paste the Web app URL from your Google Apps Script
+    // deployment (see README.md). Leave it empty and the gallery works
+    // normally, but plays and ratings aren't recorded.
     // -------------------------------------------------------------
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    let db = null;
-    if (typeof firebase !== 'undefined' && !firebaseConfig.apiKey.startsWith('YOUR_')) {
-      try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
-      } catch (err) {
-        console.error('Firebase failed to start:', err);
-      }
-    }
+    const CATALOG_URL = 'data/games.json';
+    const STATS_ENDPOINT = '';
 
     // -------------------------------------------------------------
-    // 2. COURSES AND GAMES
+    // 2. CATALOG
+    // Loaded from data/games.json when the page opens. Edit the Games tab
+    // in games.xlsx, then run tools/xlsx_to_json.py to refresh the file.
     // Links ending in /edit are Google Sites EDITOR links: only the student
-    // (and collaborators) can open them. Swap in the published link when you have it.
+    // (and collaborators) can open them. Swap in the published link.
     // Games with an empty url show "Link coming soon".
     // -------------------------------------------------------------
-    const COURSES = [
-      { key: 'Adv Tech s1', name: 'Adv Tech, Semester 1' },
-      { key: 'Adv Tech s2', name: 'Adv Tech, Semester 2' },
-      { key: 'Tech Ex s1',  name: 'Tech Ex, Semester 1' },
-      { key: 'Tech Ex s2',  name: 'Tech Ex, Semester 2' }
-    ];
-
-    const GAMES = [
-      { id: "PRJ-001", section: "Adv Tech s1", student: "Lucas V.", title: "Untitled Game", url: "https://sites.google.com/d/1gj08EwJowUhfRat4p5X9Zx2bMWxZjzoY/p/1JI30XOBEJ2HVse0-N7q1cNjQWEXHGmQP/edit" },
-      { id: "PRJ-002", section: "Adv Tech s1", student: "Landon Leber", title: "Untitled Game", url: "https://sites.google.com/d/1JI8J3W2NIkmKwY0CQDBQG25Lac-mqPeE/p/1eMGOONce4Z-wCiM-LepQkWmDh6QO8SiS/edit" },
-      { id: "PRJ-003", section: "Adv Tech s1", student: "Digby Moro", title: "3D Retro Arcade Maze", url: "https://sites.google.com/devonprep.com/3dretroarcademaze/full-page-embed" },
-      { id: "PRJ-004", section: "Adv Tech s1", student: "Liam Gunn", title: "Retro Bowl 2D Deluxe", url: "https://sites.google.com/devonprep.com/retro-bowl-2d-deluxe/full-page-embed" },
-      { id: "PRJ-005", section: "Adv Tech s1", student: "Hugo Derval", title: "Number Guess Hype", url: "https://sites.google.com/devonprep.com/number-guess-hype?usp=sharing" },
-      { id: "PRJ-006", section: "Adv Tech s1", student: "Nolan Minbiole", title: "Snake Party Game", url: "https://sites.google.com/devonprep.com/snake-party-game/full-page-embed" },
-      { id: "PRJ-007", section: "Adv Tech s1", student: "Fernando Maldonado Galindo", title: "A Small World Cup Game", url: "https://sites.google.com/devonprep.com/a-small-world-cup-game-2/a-small-world-cup" },
-      { id: "PRJ-008", section: "Adv Tech s1", student: "Gavin Ward", title: "Casino Game / Civics Economics", url: "https://sites.google.com/devonprep.com/civics-economics/full-page-embed" },
-      { id: "PRJ-009", section: "Adv Tech s1", student: "Nate Barron", title: "OmniCalc School Calculator App", url: "https://sites.google.com/devonprep.com/omnicalcschool" },
-      { id: "PRJ-010", section: "Adv Tech s1", student: "Cole", title: "Hush Hop Online Game", url: "https://sites.google.com/view/hushhop/home" },
-      { id: "PRJ-011", section: "Adv Tech s1", student: "Edward Adamczyk", title: "Wild West Shootout", url: "https://sites.google.com/devonprep.com/wildwest-shootout?usp=sharing" },
-      { id: "PRJ-012", section: "Adv Tech s2", student: "Landon Leber", title: "Number Guesser", url: "https://sites.google.com/d/1imw__qRKuX75p66g3rL_wfwB9l9kvw93/p/1Dy0hn8csF7Xv9E6cO5rH5P3SkRJa5pv7/edit?pli=1" },
-      { id: "PRJ-013", section: "Adv Tech s2", student: "Zangara", title: "Pixel Dash Adventure", url: "https://sites.google.com/devonprep.com/pixel-dash-adventure/full-page-embed" },
-      { id: "PRJ-014", section: "Adv Tech s2", student: "Jameson Kelly", title: "Untitled Game", url: "https://sites.google.com/d/1oUNKWeHVlaWH7kHT8eK3MaOkMo7Dl86s/p/1EGxYHCggS4hzSlme5rwwrdEeldmNbQtb/edit?pli=1" },
-      { id: "PRJ-015", section: "Adv Tech s2", student: "Liam Milliken", title: "Fantasy Football", url: "https://sites.google.com/devonprep.com/liamfantasyfootball-com?usp=sharing" },
-      { id: "PRJ-016", section: "Adv Tech s2", student: "Brendan", title: "Custom Game Site", url: "https://sites.google.com/d/1r63xnL7cXqHFgSYDJs3UXWWO4Q8bjLDw/p/1YRNHL-tSi36-yuxn8vOIlcT3iYDWqSFI/edit" },
-      { id: "PRJ-017", section: "Adv Tech s2", student: "Spencer Dsouza", title: "Web Application", url: "https://sites.google.com/d/1idphY3FMtVOnPmSJSWvWFScN8rAVi0xm/p/1F3KsBlaDtmVoSRLtjjH1C8AirRUv2pF_/edit" },
-      { id: "PRJ-018", section: "Adv Tech s2", student: "G Dog Strenis", title: "Interactive Game Hub", url: "https://sites.google.com/devonprep.com/devonprep/full-page-embed" },
-      { id: "PRJ-019", section: "Adv Tech s2", student: "Zack Shelton", title: "Flight Simulator", url: "https://sites.google.com/devonprep.com/zacks-flying-simulator/full-page-embed" },
-      { id: "PRJ-020", section: "Adv Tech s2", student: "Adam Aufiero", title: "Texas Hold'em Poker", url: "https://sites.google.com/devonprep.com/texasholdempoker/full-page-embed" },
-      { id: "PRJ-021", section: "Adv Tech s2", student: "Conor Emery", title: "3D Minecraft Game", url: "https://sites.google.com/devonprep.com/3dminecraftgame/full-page-embed" },
-      { id: "PRJ-022", section: "Adv Tech s2", student: "Bennett Caufield", title: "Fortnite 3D Battle Royale", url: "https://sites.google.com/devonprep.com/fortnite-3d-battle-royale/full-page-embed" },
-      { id: "PRJ-060", section: "Adv Tech s2", student: "Benjamin Andrade Flores", title: "3D Flight Simulator", url: "https://sites.google.com/devonprep.com/3d-flight-simulator/full-page-embed" },
-      { id: "PRJ-023", section: "Adv Tech s2", student: "Zachary Huffman", title: "Flight Babylon", url: "https://sites.google.com/devonprep.com/flightbabylon/home" },
-      { id: "PRJ-044", section: "Tech Ex s1", student: "Nathan Korenman", title: "Mouse Master Overclocked", url: "https://sites.google.com/devonprep.com/mouse-master-overclocked/full-page-embed" },
-      { id: "PRJ-045", section: "Tech Ex s1", student: "Edison Li", title: "Poly F1 Championship", url: "https://sites.google.com/devonprep.com/poly-f1-cchampionship/full-page-embed" },
-      { id: "PRJ-046", section: "Tech Ex s1", student: "Spencer Dsouza", title: "Street Racers", url: "https://sites.google.com/devonprep.com/street-racers/home" },
-      { id: "PRJ-047", section: "Tech Ex s1", student: "Jimmy Epperson", title: "Teddy's Quest for Sprite", url: "https://sites.google.com/devonprep.com/teddysquestforsprite/full-page-embed" },
-      { id: "PRJ-048", section: "Tech Ex s1", student: "Aiden Brannen", title: "Blacksmith Legends", url: "https://sites.google.com/devonprep.com/blacksmnith-legends/full-page-embed" },
-      { id: "PRJ-049", section: "Tech Ex s1", student: "Teddy O'Leary", title: "Untitled Game", url: "https://sites.google.com/d/14J4LTcJaFz2mOGfkV48ot00PuMI25Mqj/p/1y6MaY7DgqreLaZRZkMnyC-D4z7gEXdZW/edit" },
-      { id: "PRJ-050", section: "Tech Ex s1", student: "Seamus Brophy", title: "Untitled Game", url: "https://sites.google.com/d/1JOv_OVf9U09My0nOKeHphJik2Q0cffuO/p/1lvkzFkiCGOTsTSjWiBOB5L8FgQZCrUmw/edit" },
-      { id: "PRJ-051", section: "Tech Ex s1", student: "Victor Crimins", title: "Relic Hunter", url: "https://sites.google.com/devonprep.com/relic-hunter/full-page-embed" },
-      { id: "PRJ-052", section: "Tech Ex s1", student: "Keenan MacDougal", title: "Head Football Champions", url: "https://sites.google.com/devonprep.com/headfootballchampions/full-page-embed" },
-      { id: "PRJ-053", section: "Tech Ex s1", student: "Nolan English", title: "College Football Career Dynasty", url: "https://sites.google.com/devonprep.com/collegefootballcareerdynastysi/full-page-embed" },
-      { id: "PRJ-054", section: "Tech Ex s1", student: "Patrick Cognato", title: "Arcade Baseball", url: "https://sites.google.com/devonprep.com/arcade-baseball/full-page-embed" },
-      { id: "PRJ-055", section: "Tech Ex s1", student: "Samuel Schaffer", title: "Puppet Legend Wildcrest", url: "https://sites.google.com/devonprep.com/puppet-legend-wildcrest/full-page-embed" },
-      { id: "PRJ-056", section: "Tech Ex s1", student: "Charlie Neill", title: "Rally Drift 3D", url: "https://sites.google.com/devonprep.com/rally-drift-3d/full-page-embed" },
-      { id: "PRJ-057", section: "Tech Ex s1", student: "Jameson Ash", title: "Olympic Swim Meet", url: "https://sites.google.com/devonprep.com/olympic-swim-meet/full-page-embed" },
-      { id: "PRJ-058", section: "Tech Ex s1", student: "Nick Pettia", title: "Lebron Ascension Tap Overlord", url: "https://sites.google.com/devonprep.com/lebron-ascension-tap-overlord/full-page-embed" },
-      { id: "PRJ-059", section: "Tech Ex s1", student: "Johnny Williamson", title: "Chip's Arena Battle Game", url: "https://sites.google.com/devonprep.com/chips-arena-battle-game/full-page-embed" },
-      { id: "PRJ-024", section: "Tech Ex s2", student: "Kyle", title: "Hallow Slasher", url: "https://sites.google.com/devonprep.com/hallow-slasher/full-page-embed" },
-      { id: "PRJ-025", section: "Tech Ex s2", student: "Tommy Heater", title: "Banana Raider", url: "https://sites.google.com/devonprep.com/banana-raider-game/home" },
-      { id: "PRJ-026", section: "Tech Ex s2", student: "Brennan", title: "Voxelmon Kanto 3D", url: "https://sites.google.com/devonprep.com/voxelmon-kanto-3d/full-page-embed" },
-      { id: "PRJ-027", section: "Tech Ex s2", student: "Chuck Veith", title: "3D Block Runner", url: "https://sites.google.com/d/11wHDm1qFfMHINxZOcGKiQq9ZfyTB0PzW/p/1gk6DXnsrZ7SDKOjY1-_D3Zfmfe0FaQr5/edit" },
-      { id: "PRJ-028", section: "Tech Ex s2", student: "Blake", title: "Slither IO", url: "https://sites.google.com/devonprep.com/blakes-slither-io?usp=sharing" },
-      { id: "PRJ-029", section: "Tech Ex s2", student: "Matteo", title: "5 Nights at Devon Prep", url: "https://sites.google.com/devonprep.com/5-nights-at-devon-prep?usp=sharing" },
-      { id: "PRJ-030", section: "Tech Ex s2", student: "Joseph DeMaio", title: "Siege", url: "https://sites.google.com/d/1GN0Rj6OYkWOu8ey7Cw78D9vd9noXFbB5/p/145L20Uo2CLT63Ou2ZjNJThM5xtMmH6re/edit?pli=1" },
-      { id: "PRJ-031", section: "Tech Ex s2", student: "Henry Fiorini", title: "Custom App", url: "https://sites.google.com/d/1VEWX-hqID93G0AbYyirEDsJUf0sL1D1k/p/1AP_p9KJDp68p7OKMlPB50x0u5JrEvo2M/edit?pli=1" },
-      { id: "PRJ-032", section: "Tech Ex s2", student: "Daniel Logue", title: "Car Game", url: "https://sites.google.com/devonprep.com/car-game/full-page-embed" },
-      { id: "PRJ-033", section: "Tech Ex s2", student: "James McGrory", title: "Find the Needle in a Haystack", url: "https://sites.google.com/devonprep.com/1-billion-hay-straws-search-fo/full-page-embed" },
-      { id: "PRJ-034", section: "Tech Ex s2", student: "Cameron Burch", title: "Tea Cup Bob", url: "https://sites.google.com/devonprep.com/cameron-tea-cup-bob/home" },
-      { id: "PRJ-035", section: "Tech Ex s2", student: "Sean Polizzo", title: "Blox Fruits Clicker", url: "https://sites.google.com/d/1cT-mVA6tXORVi0hfUl7hG986MiK7muQB/p/13IusWX2Axlr2HmLWOv-u1MislRhLEn4V/edit" },
-      { id: "PRJ-036", section: "Tech Ex s2", student: "Jael Coursey Soto", title: "Puck Blitz 3D", url: "https://sites.google.com/devonprep.com/puckblitz3d-xpchampions/full-page-embed" },
-      { id: "PRJ-037", section: "Tech Ex s2", student: "George Bayers", title: "3D Music Game", url: "https://sites.google.com/devonprep.com/3d-music-game/full-page-embed" },
-      { id: "PRJ-038", section: "Tech Ex s2", student: "Todd", title: "3D Arcade Lacrosse", url: "https://sites.google.com/devonprep.com/3d-arcade-lacrosse-todd/full-page-embed" },
-      { id: "PRJ-039", section: "Tech Ex s2", student: "Zac Chilkatowsky", title: "3D 2-on-1 Ice Hockey", url: "https://sites.google.com/devonprep.com/3d-2-on-1-ice-hockey?usp=sharing" },
-      { id: "PRJ-040", section: "Tech Ex s2", student: "Donny Belles", title: "Custom Game Hub", url: "https://sites.google.com/d/1Hmoc8CDv6eQyZ8lKPHeeTAHnhxJMOVWo/p/1ND8OzXfurVaBEEln7VC1dc4LjtfWmAOT/edit?pli=1" },
-      { id: "PRJ-041", section: "Tech Ex s2", student: "Max Mundy", title: "Project Site", url: "https://sites.google.com/d/1Xmz_MoHanxr8yTOrYF_JZhPdRVaixNyI/p/1DLWOHWBAhTranYYL1jFK9ADpdW_VxNn2/edit" }
-    ];
+    let COURSES = [];
+    let GAMES = [];
 
     // -------------------------------------------------------------
     // 3. STATE AND HELPERS
@@ -604,28 +523,49 @@
     function renderAll() { renderTabs(); renderStats(); renderGallery(); }
 
     // -------------------------------------------------------------
-    // 5. FIREBASE WRITES
+    // 5. PLAYS AND RATINGS (saved to Google Sheets through Apps Script)
     // -------------------------------------------------------------
+    function post(payload) {
+      if (!STATS_ENDPOINT) return;
+      try {
+        fetch(STATS_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          keepalive: true,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      } catch (err) { console.warn('Could not send stats:', err); }
+    }
+
+    function bump(id, fn) {
+      const s = stats[id] = Object.assign({ views: 0, ratingTotal: 0, ratingCount: 0 }, stats[id]);
+      fn(s);
+    }
+
     function recordPlay(id) {
-      if (db) db.ref(`games/${id}/views`).transaction(v => (v || 0) + 1);
+      post({ type: 'play', id });
+      bump(id, s => { s.views += 1; });
+      renderStats();
+      setTimeout(renderGallery, 300);
     }
 
     function rateGame(id, n) {
       if (getRated()[id]) return;
       saveRated(id, n);
-      if (db) {
-        db.ref(`games/${id}`).transaction(d => {
-          d = d || {};
-          d.ratingTotal = (d.ratingTotal || 0) + n;
-          d.ratingCount = (d.ratingCount || 0) + 1;
-          return d;
-        });
-      }
+      post({ type: 'rating', id, stars: n });
+      bump(id, s => { s.ratingTotal += n; s.ratingCount += 1; });
+      renderStats();
       renderGallery();
     }
 
-    if (db) {
-      db.ref('games').on('value', snap => { stats = snap.val() || {}; renderStats(); renderGallery(); });
+    async function loadStats() {
+      if (!STATS_ENDPOINT) return;
+      try {
+        const res = await fetch(STATS_ENDPOINT);
+        const data = await res.json();
+        if (data && typeof data === 'object') { stats = data; renderStats(); renderGallery(); }
+      } catch (err) { console.warn('Could not load stats:', err); }
     }
 
     // -------------------------------------------------------------
@@ -654,7 +594,24 @@
       }
     });
 
-    renderAll();
+    async function init() {
+      try {
+        const res = await fetch(CATALOG_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        COURSES = data.courses || [];
+        GAMES = data.games || [];
+      } catch (err) {
+        console.error('Could not load the game catalog:', err);
+        document.getElementById('gallery').innerHTML =
+          '<p style="padding:48px 0;text-align:center;color:var(--muted)">The game list could not be loaded. If you opened this file directly from your computer, view it through GitHub Pages or a local web server instead.</p>';
+        return;
+      }
+      renderAll();
+      loadStats();
+    }
+
+    init();
   </script>
 </body>
 </html>

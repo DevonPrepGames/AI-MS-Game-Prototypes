@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Round 1 Results | Devon Prep Student Games</title>
-  <meta name="description" content="Final numbers from Round 1 of the Devon Prep Student Games Showcase. Round 2 opens the week of November 23.">
- 
+  <title>Student Games Showcase | Devon Prep</title>
+  <meta name="description" content="Play and rate games built by Devon Prep technology students.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
- 
+
+
   <style>
     :root {
       --navy: #13284f;
       --navy-deep: #0b1a36;
-      --navy-mid: #2a4478;
       --gold: #c9a227;
       --gold-soft: #f3e7bf;
       --paper: #ffffff;
@@ -22,317 +22,596 @@
       --line: #d6dce7;
       --ink: #1a2233;
       --muted: #5a6680;
-      --low: #8a94a8;
       --serif: 'Libre Caslon Text', Georgia, serif;
       --sans: 'Public Sans', system-ui, -apple-system, sans-serif;
     }
- 
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--sans); background: var(--surface); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
-    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
- 
-    /* ---------- Masthead ---------- */
-    .masthead { background: var(--navy); color: #fff; border-bottom: 6px solid var(--gold); }
-    .masthead-top { display: flex; align-items: center; gap: 14px; padding: 22px 0 0; }
-    .crest { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--gold); display: grid; place-items: center; font: 700 1rem var(--serif); color: var(--gold); flex-shrink: 0; }
-    .school-name { font-family: var(--serif); font-size: 1.05rem; letter-spacing: 0.02em; color: #dbe3f2; }
-    .school-name small { display: block; font-family: var(--sans); font-size: 0.8rem; color: #9fb0cf; }
- 
-    .hero { padding: 52px 0 48px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: end; }
-    .hero h1 { font: 400 clamp(2.3rem, 5.5vw, 3.9rem)/1.04 var(--serif); letter-spacing: -0.01em; }
-    .hero p { margin-top: 18px; color: #c8d3e8; font-size: 1.08rem; max-width: 50ch; }
-    .return { margin-top: 24px; display: inline-flex; align-items: baseline; gap: 10px; background: var(--gold); color: var(--navy-deep); padding: 10px 16px; border-radius: 8px; font-weight: 600; }
-    .return b { font: 700 1.05rem var(--sans); }
- 
-    .big-number { text-align: right; }
-    .big-number strong { display: block; font: 400 clamp(4.5rem, 12vw, 8.5rem)/0.9 var(--serif); color: var(--gold); letter-spacing: -0.02em; }
-    .big-number span { display: block; margin-top: 10px; color: #c8d3e8; font-size: 1.05rem; }
- 
-    .facts { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,0.14); }
-    .facts div { padding: 20px 0 24px; }
-    .facts div + div { padding-left: 24px; border-left: 1px solid rgba(255,255,255,0.14); }
-    .facts strong { font: 400 2rem/1 var(--serif); color: #fff; }
-    .facts span { display: block; margin-top: 6px; font-size: 0.88rem; color: #9fb0cf; }
- 
-    /* ---------- Sections ---------- */
-    main { padding: 8px 0 72px; }
-    .section { margin-top: 48px; }
-    .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; padding-bottom: 12px; margin-bottom: 20px; border-bottom: 2px solid var(--navy); }
-    .section-head h2 { font: 400 1.75rem var(--serif); color: var(--navy); }
-    .section-head p { color: var(--muted); font-size: 0.92rem; }
- 
-    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
- 
-    /* Ratings */
-    .ratings { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
-    .tiers { display: flex; flex-direction: column; justify-content: center; gap: 18px; height: 100%; }
-    .tier { display: grid; grid-template-columns: 70px 1fr 120px; align-items: center; gap: 14px; font-size: 0.95rem; }
-    .tier-label { font-weight: 600; color: var(--navy); }
-    .tier-bar { height: 18px; background: var(--surface); border-radius: 9px; overflow: hidden; }
-    .tier-bar i { display: block; height: 100%; border-radius: 9px; background: var(--navy-mid); }
-    .tier.top .tier-bar i { background: var(--gold); }
-    .tier.bottom .tier-bar i { background: var(--low); }
-    .tier-val { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
-    .tier-val b { color: var(--ink); font-weight: 700; }
- 
-    .ratio { display: flex; flex-direction: column; justify-content: center; gap: 22px; }
-    .ratio-figure strong { display: block; font: 400 3.4rem/1 var(--serif); color: var(--navy); }
-    .ratio-figure span { display: block; margin-top: 8px; color: var(--muted); font-size: 0.95rem; max-width: 34ch; }
-    .split { display: flex; height: 14px; border-radius: 7px; overflow: hidden; }
-    .split i:first-child { background: var(--gold); }
-    .split i:nth-child(2) { background: var(--line); }
-    .split i:last-child { background: var(--low); }
-    .split-legend { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-top: 8px; gap: 12px; }
- 
-    /* Mind map */
-    .map-wrap { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-    .map-svg { display: block; width: 100%; height: auto; }
-    .map-svg .branch-line { stroke: var(--navy); stroke-width: 2; fill: none; }
-    .map-svg .leaf-line { stroke: var(--line); stroke-width: 1.5; fill: none; }
-    .map-list { display: none; }
- 
-    .caveat { margin-top: 14px; font-size: 0.88rem; color: var(--muted); max-width: 80ch; }
- 
-    /* Next */
-    .next { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .step { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
-    .step time { display: inline-block; font-weight: 700; font-size: 0.85rem; color: var(--navy-deep); background: var(--gold-soft); padding: 3px 10px; border-radius: 6px; }
-    .step h3 { font: 400 1.3rem/1.25 var(--serif); color: var(--navy); margin: 12px 0 6px; }
-    .step p { color: var(--muted); font-size: 0.95rem; }
- 
-    footer { background: var(--navy-deep); color: #9fb0cf; font-size: 0.85rem; padding: 24px 0; }
- 
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr; gap: 28px; }
-      .big-number { text-align: left; }
-      .ratings, .next { grid-template-columns: 1fr; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--surface);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
+
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---------- Masthead ---------- */
+    .masthead {
+      background: var(--navy);
+      color: #fff;
+      border-bottom: 6px solid var(--gold);
+    }
+
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 0 0;
+    }
+
+    .crest {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: grid; place-items: center;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .school-name {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      color: #dbe3f2;
+    }
+
+    .school-name small {
+      display: block;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      color: #9fb0cf;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: end;
+      padding: 48px 0 40px;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2.2rem, 5.5vw, 3.75rem);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      max-width: 14ch;
+    }
+
+    .hero p {
+      margin-top: 16px;
+      color: #c8d3e8;
+      font-size: 1.05rem;
+      max-width: 52ch;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 28px;
+      padding-bottom: 6px;
+    }
+
+    .hero-stats div { text-align: right; }
+
+    .hero-stats strong {
+      display: block;
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 2.4rem;
+      line-height: 1;
+      color: var(--gold);
+    }
+
+    .hero-stats span { font-size: 0.85rem; color: #9fb0cf; }
+
+    /* Course tabs sit on the gold rule */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex-shrink: 0;
+      font: 600 0.92rem var(--sans);
+      color: #c8d3e8;
+      background: transparent;
+      border: none;
+      padding: 12px 18px 14px;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+    }
+
+    .tab:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+    .tab[aria-selected="true"] { background: var(--gold); color: var(--navy-deep); }
+
+    .tab .count { font-weight: 500; opacity: 0.7; margin-left: 4px; }
+
+    /* ---------- Toolbar ---------- */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      padding: 28px 0 8px;
+    }
+
+    .search {
+      flex: 1 1 280px;
+      position: relative;
+    }
+
+    .search svg {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      color: var(--muted);
+    }
+
+    .search input, .sort select {
+      width: 100%;
+      font: 500 1rem var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px 14px;
+    }
+
+    .search input { padding-left: 42px; }
+    .search input:focus, .sort select:focus { border-color: var(--navy); outline: none; box-shadow: 0 0 0 3px var(--gold-soft); }
+
+    .sort { display: flex; align-items: center; gap: 8px; }
+    .sort label { font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+    .sort select { width: auto; cursor: pointer; }
+
+    .result-note { font-size: 0.9rem; color: var(--muted); padding-bottom: 8px; }
+
+    /* ---------- Gallery ---------- */
+    main { padding-bottom: 72px; }
+
+    .group { margin-top: 32px; }
+
+    .group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+      border-bottom: 2px solid var(--navy);
+    }
+
+    .group-head h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.6rem;
+      color: var(--navy);
+    }
+
+    .group-head span { color: var(--muted); font-size: 0.9rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
+      gap: 16px;
+    }
+
+    .game {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .game-who { display: flex; gap: 12px; align-items: center; }
+
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--gold);
+      display: grid; place-items: center;
+      font: 700 0.85rem var(--sans);
+      flex-shrink: 0;
+    }
+
+    .student { font-weight: 600; font-size: 0.95rem; }
+    .course { font-size: 0.82rem; color: var(--muted); }
+
+    .game h3 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.3rem;
+      line-height: 1.25;
+      color: var(--navy-deep);
+    }
+
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .avg { display: flex; align-items: center; gap: 6px; }
+    .avg b { color: var(--ink); font-weight: 700; }
+
+    .stars { display: inline-flex; gap: 2px; }
+    .stars button {
+      background: none; border: none; padding: 2px;
+      cursor: pointer; line-height: 0;
+      color: var(--line);
+    }
+    .stars svg { width: 20px; height: 20px; fill: currentColor; }
+    .stars button.on { color: var(--gold); }
+    .stars:not(.locked):hover button { color: var(--gold); }
+    .stars:not(.locked) button:hover ~ button { color: var(--line); }
+    .stars.locked button { cursor: default; }
+
+    .rate-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--muted); }
+
+    .play {
+      display: block;
+      text-align: center;
+      font: 700 0.95rem var(--sans);
+      color: #fff;
+      background: var(--navy);
+      text-decoration: none;
+      padding: 11px;
+      border-radius: 8px;
+    }
+    .play:hover { background: var(--navy-deep); }
+    .play.soon { background: var(--surface); color: var(--muted); cursor: default; }
+
+    .empty {
+      text-align: center;
+      padding: 64px 0;
+      color: var(--muted);
+    }
+    .empty button {
+      margin-top: 12px;
+      font: 600 0.95rem var(--sans);
+      color: var(--navy);
+      background: none;
+      border: 1px solid var(--navy);
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: #9fb0cf;
+      font-size: 0.85rem;
+      padding: 24px 0;
+    }
+
     @media (max-width: 720px) {
       .wrap { padding: 0 16px; }
-      .facts { grid-template-columns: 1fr; }
-      .facts div + div { padding-left: 0; border-left: none; border-top: 1px solid rgba(255,255,255,0.14); }
-      .tier { grid-template-columns: 56px 1fr 96px; gap: 10px; }
-      .map-svg { display: none; }
-      .map-list { display: block; }
-      .panel { padding: 18px; }
+      .hero { grid-template-columns: 1fr; padding: 32px 0 28px; gap: 20px; }
+      .hero-stats div { text-align: left; }
+      .sort { width: 100%; }
+      .sort select { flex: 1; }
     }
- 
-    /* Stacked mind map for phones */
-    .m-center { background: var(--navy); color: #fff; border-radius: 10px; padding: 14px 16px; font: 400 1.25rem var(--serif); text-align: center; }
-    .m-branch { position: relative; margin: 18px 0 0 14px; padding-left: 18px; border-left: 2px solid var(--navy); }
-    .m-branch h3 { font: 700 1rem var(--sans); color: var(--navy-deep); background: var(--gold-soft); border: 1px solid #e3d29a; display: inline-block; padding: 6px 12px; border-radius: 8px; }
-    .m-branch ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .m-branch li { background: var(--surface); border-radius: 8px; padding: 10px 12px; font-size: 0.92rem; }
   </style>
 </head>
 <body>
- 
+
   <header class="masthead">
     <div class="wrap">
       <div class="masthead-top">
         <div class="crest" aria-hidden="true">DP</div>
         <div class="school-name">Devon Preparatory School<small>Technology Department</small></div>
       </div>
- 
+
       <div class="hero">
         <div>
-          <h1>Round 1 is closed. Here's how it played out.</h1>
-          <p>For 11 days, students played and rated 58 games built by 7th and 8th graders. The site is offline while the top games are hand-tested, so Round 2 rewards games that actually work, not just the ones that got clicked most.</p>
-          <div class="return"><b>Round 2 opens the week of November 23</b></div>
+          <h1>Student Games Showcase</h1>
+          <p>Every game here was designed and built by a Devon Prep student using AI tools. Pick one, play it, and leave a rating.</p>
         </div>
-        <div class="big-number">
-          <strong>2,344</strong>
-          <span>total plays, November 3 to 13</span>
+        <div class="hero-stats">
+          <div><strong id="statGames">0</strong><span>games</span></div>
+          <div><strong id="statPlays">0</strong><span>plays</span></div>
+          <div><strong id="statRatings">0</strong><span>ratings</span></div>
         </div>
       </div>
- 
-      <div class="facts">
-        <div><strong>1,320</strong><span>star ratings left</span></div>
-        <div><strong>58</strong><span>games from 4 class sections</span></div>
-        <div><strong>2.63</strong><span>average rating, out of 5 stars</span></div>
-      </div>
+
+      <nav class="tabs" role="tablist" aria-label="Filter by course" id="tabs"></nav>
     </div>
   </header>
- 
-  <main class="wrap">
- 
-    <!-- Ratings -->
-    <section class="section" aria-labelledby="ratingsHead">
-      <div class="section-head"><h2 id="ratingsHead">How the ratings broke down</h2><p>All 1,320 ratings</p></div>
-      <div class="ratings">
-        <div class="panel">
-          <div class="tiers" id="tiers"></div>
-        </div>
-        <div class="panel ratio">
-          <div class="ratio-figure">
-            <strong>1 : 1.5</strong>
-            <span>For every high rating (4 or 5 stars) there were 1.5 low ratings (1 or 2 stars).</span>
-          </div>
-          <div>
-            <div class="split" role="img" aria-label="466 high ratings, 144 middle ratings, 710 low ratings">
-              <i style="width:35.3%"></i><i style="width:10.9%"></i><i style="width:53.8%"></i>
-            </div>
-            <div class="split-legend"><span>High 466 (35%)</span><span>Middle 144</span><span>Low 710 (54%)</span></div>
-          </div>
-          <div class="ratio-figure">
-            <strong>71%</strong>
-            <span>of all ratings were either 1 star or 5 stars. Very few students picked anything in between.</span>
-          </div>
-        </div>
+
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="search" placeholder="Search by student or game" aria-label="Search by student or game">
       </div>
-    </section>
- 
-    <!-- Mind map -->
-    <section class="section" aria-labelledby="mapHead">
-      <div class="section-head"><h2 id="mapHead">What drove the plays</h2><p>Patterns in the Round 1 data</p></div>
-      <div class="map-wrap">
-        <svg class="map-svg" id="mapSvg" viewBox="0 0 1240 720" role="img" aria-labelledby="mapTitle">
-          <title id="mapTitle">Mind map of what drove plays in Round 1</title>
-        </svg>
-        <div class="map-list" id="mapList"></div>
+      <div class="sort">
+        <label for="sort">Sort by</label>
+        <select id="sort">
+          <option value="course">Course</option>
+          <option value="rating">Highest rated</option>
+          <option value="plays">Most played</option>
+          <option value="title">Game title, A to Z</option>
+          <option value="student">Student name, A to Z</option>
+        </select>
       </div>
-      <p class="caveat">Grade refers to the grade of the student who made the game. The site didn't record who was playing. Plays are counted from clicks on each game's Play button.</p>
-    </section>
- 
-    <!-- Next -->
-    <section class="section" aria-labelledby="nextHead">
-      <div class="section-head"><h2 id="nextHead">What happens next</h2></div>
-      <div class="next">
-        <div class="step">
-          <time>Now</time>
-          <h3>Every top game gets tested</h3>
-          <p>The 19 most-played games, the top third, are being played start to finish. Each is scored on whether it runs, how it controls, how deep the gameplay goes, polish, and originality.</p>
-        </div>
-        <div class="step">
-          <time>Week of Nov 23</time>
-          <h3>Round 2 opens</h3>
-          <p>15 to 20 games return, each with a cover image made by its creator. Plays and ratings start fresh, and Round 1 numbers stay on record.</p>
-        </div>
-        <div class="step">
-          <time>Round 2</time>
-          <h3>A new "By the #'s" page</h3>
-          <p>Live plays and ratings, how each game is trending day by day, and how its Round 2 numbers compare with Round 1.</p>
-        </div>
-      </div>
-    </section>
- 
-  </main>
- 
+    </div>
+    <p class="result-note" id="resultNote" aria-live="polite"></p>
+  </div>
+
+  <main class="wrap" id="gallery"></main>
+
   <footer>
-    <div class="wrap">Devon Preparatory School, Technology Department. Student Games Showcase, Round 1: November 3 to 13, 2026.</div>
+    <div class="wrap">Devon Preparatory School, Technology Department. Games open in a new tab.</div>
   </footer>
- 
+
   <script>
-    // ---------- Final Round 1 numbers (from the AI_MS_games workbook) ----------
-    const STARS = [588, 122, 144, 122, 344];   // 1 star .. 5 stars
-    const TOTAL = STARS.reduce((a, b) => a + b, 0);
- 
-    document.getElementById('tiers').innerHTML = [5, 4, 3, 2, 1].map(n => {
-      const v = STARS[n - 1], pct = (v / TOTAL) * 100;
-      const cls = n >= 4 ? 'top' : n <= 2 ? 'bottom' : '';
-      return `<div class="tier ${cls}">
-        <span class="tier-label">${n} star${n > 1 ? 's' : ''}</span>
-        <span class="tier-bar" role="img" aria-label="${pct.toFixed(1)} percent"><i style="width:${pct.toFixed(1)}%"></i></span>
-        <span class="tier-val"><b>${pct.toFixed(1)}%</b> (${v})</span>
-      </div>`;
-    }).join('');
- 
-    // ---------- Mind map content ----------
-    const MAP = {
-      center: ['What drove', 'the plays?'],
-      branches: [
-        { title: 'Top of the first page', leaves: [
-          'The first 11 games on the page averaged 49 plays. The next 13 averaged 28.',
-          'Game #1 on the page was untitled and still drew 65 plays, the 6th most of 58.',
-          'Wild West Shootout, 11th on the page: 51 plays, but the lowest average at 1.6 stars.'
-        ]},
-        { title: 'Relatable content', leaves: [
-          'All 5 most-played games were sports or versions of games students already knew.',
-          'Those 24 games took 51% of all plays: about 50 plays each, compared with 34 for original ideas.',
-          '5 Nights at Devon Prep, set at school, drew 47 ratings, the 3rd most.'
-        ]},
-        { title: '7th vs 8th grade games', leaves: [
-          '7th grade games: 42 plays each on average, 30% of ratings at 5 stars.',
-          '8th grade games: 38 plays each on average, 21% of ratings at 5 stars.',
-          '7th graders made 12 of the 15 sports games, and 3 of the 4 games past 100 plays.',
-          '8th grade games got more ratings per play: 0.63, compared with 0.52.'
-        ]},
-        { title: 'Clicked, not played', leaves: [
-          '10 games got more ratings than plays, so some were rated without being opened.',
-          '71% of ratings were 1 or 5 stars, which reads as voting, not reviewing.',
-          '40% of all plays happened in a single hour, 1 to 2 PM.'
-        ]}
-      ]
+    // -------------------------------------------------------------
+    // 1. SETTINGS
+    // CATALOG_URL: the list of courses and games (data/games.json).
+    // STATS_ENDPOINT: paste the Web app URL from your Google Apps Script
+    // deployment (see README.md). Leave it empty and the gallery works
+    // normally, but plays and ratings aren't recorded.
+    // -------------------------------------------------------------
+    const CATALOG_URL = 'data/games.json';
+    const STATS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwRaKFVWpufpSu96GAI2PnejZXaURx70SZgCiZgGHPGNCtkG4Gx-o6QxbQ0hmMK4a85/exec';
+
+    // -------------------------------------------------------------
+    // 2. CATALOG
+    // Loaded from data/games.json when the page opens. Edit the Games tab
+    // in games.xlsx, then run tools/xlsx_to_json.py to refresh the file.
+    // Links ending in /edit are Google Sites EDITOR links: only the student
+    // (and collaborators) can open them. Swap in the published link.
+    // Games with an empty url show "Link coming soon".
+    // -------------------------------------------------------------
+    let COURSES = [];
+    let GAMES = [];
+
+    // -------------------------------------------------------------
+    // 3. STATE AND HELPERS
+    // -------------------------------------------------------------
+    const state = { course: 'all', query: '', sort: 'course' };
+    let stats = {};
+
+    const RATED_KEY = 'dpShowcaseRated';
+    const getRated = () => { try { return JSON.parse(localStorage.getItem(RATED_KEY)) || {}; } catch { return {}; } };
+    const saveRated = (id, n) => {
+      try { const r = getRated(); r[id] = n; localStorage.setItem(RATED_KEY, JSON.stringify(r)); } catch {}
     };
- 
-    // Phone layout: stacked list
-    document.getElementById('mapList').innerHTML =
-      `<div class="m-center">${MAP.center.join(' ')}</div>` +
-      MAP.branches.map(b => `<div class="m-branch"><h3>${b.title}</h3><ul>${b.leaves.map(l => `<li>${l}</li>`).join('')}</ul></div>`).join('');
- 
-    // Desktop layout: radial SVG
-    (function drawMap() {
-      const svg = document.getElementById('mapSvg');
-      const NS = 'http://www.w3.org/2000/svg';
-      const el = (tag, attrs, parent = svg) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; };
-      const C = { x: 620, y: 360 };
-      const LEAF_W = 300, LEAF_H = 62, GAP = 10;
- 
-      // Branch hubs and the side their leaves sit on
-      const layout = [
-        { hub: { x: 470, y: 150 }, side: -1, leafX: 20,  top: 40  },
-        { hub: { x: 770, y: 150 }, side:  1, leafX: 920, top: 40  },
-        { hub: { x: 470, y: 570 }, side: -1, leafX: 20,  top: 384 },
-        { hub: { x: 770, y: 570 }, side:  1, leafX: 920, top: 420 }
-      ];
- 
-      const lines = el('g', {}), nodes = el('g', {});
- 
-      // Wrap text into lines that fit a width (approximate by character count)
-      const wrap = (text, max) => {
-        const words = text.split(' '), out = []; let line = '';
-        words.forEach(w => { if ((line + ' ' + w).trim().length > max) { out.push(line.trim()); line = w; } else line += ' ' + w; });
-        if (line.trim()) out.push(line.trim());
-        return out;
-      };
- 
-      MAP.branches.forEach((b, i) => {
-        const L = layout[i];
-        const leafCount = b.leaves.length;
-        const blockH = leafCount * LEAF_H + (leafCount - 1) * GAP;
-        const startY = L.top + (i >= 2 ? 0 : 0);
- 
-        // center -> hub
-        el('path', { d: `M${C.x},${C.y} C${C.x},${(C.y + L.hub.y) / 2} ${L.hub.x},${(C.y + L.hub.y) / 2} ${L.hub.x},${L.hub.y}`, class: 'branch-line' }, lines);
- 
-        // leaves
-        b.leaves.forEach((t, j) => {
-          const y = startY + j * (LEAF_H + GAP);
-          const edgeX = L.side < 0 ? L.leafX + LEAF_W : L.leafX;
-          el('path', { d: `M${L.hub.x + L.side * -0},${L.hub.y} C${(L.hub.x + edgeX) / 2},${L.hub.y} ${(L.hub.x + edgeX) / 2},${y + LEAF_H / 2} ${edgeX},${y + LEAF_H / 2}`, class: 'leaf-line' }, lines);
-          el('rect', { x: L.leafX, y, width: LEAF_W, height: LEAF_H, rx: 8, fill: '#eef1f6' }, nodes);
-          const txt = el('text', { x: L.leafX + 14, y: y + 25, fill: '#1a2233', 'font-family': 'Public Sans, sans-serif', 'font-size': 13.5 }, nodes);
-          wrap(t, 42).slice(0, 3).forEach((ln, k) => { const ts = el('tspan', { x: L.leafX + 14, dy: k ? 17 : 0 }, txt); ts.textContent = ln; });
-          // vertically center 2- vs 3-line text
-          const n = Math.min(3, wrap(t, 42).length);
-          txt.setAttribute('y', y + LEAF_H / 2 - (n - 1) * 8.5 + 5);
-        });
- 
-        // hub label
-        const w = b.title.length * 8.6 + 32;
-        el('rect', { x: L.hub.x - w / 2, y: L.hub.y - 20, width: w, height: 40, rx: 9, fill: '#f3e7bf', stroke: '#c9a227', 'stroke-width': 1.5 }, nodes);
-        const ht = el('text', { x: L.hub.x, y: L.hub.y + 5.5, 'text-anchor': 'middle', fill: '#0b1a36', 'font-family': 'Public Sans, sans-serif', 'font-size': 15, 'font-weight': 700 }, nodes);
-        ht.textContent = b.title;
-      });
- 
-      // center node
-      el('circle', { cx: C.x, cy: C.y, r: 78, fill: '#13284f' }, nodes);
-      el('circle', { cx: C.x, cy: C.y, r: 84, fill: 'none', stroke: '#c9a227', 'stroke-width': 2 }, nodes);
-      MAP.center.forEach((ln, k) => {
-        const t = el('text', { x: C.x, y: C.y - 4 + k * 26, 'text-anchor': 'middle', fill: '#fff', 'font-family': 'Libre Caslon Text, Georgia, serif', 'font-size': 21 }, nodes);
-        t.textContent = ln;
-      });
-    })();
+
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    const courseName = key => (COURSES.find(c => c.key === key) || {}).name || key;
+    const initials = name => name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+    const statFor = id => stats[id] || {};
+    const avgFor = id => { const s = statFor(id); return s.ratingCount ? s.ratingTotal / s.ratingCount : 0; };
+
+    const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>';
+
+    // -------------------------------------------------------------
+    // 4. RENDERING
+    // -------------------------------------------------------------
+    function renderTabs() {
+      const all = [{ key: 'all', name: 'All courses', n: GAMES.length }]
+        .concat(COURSES.map(c => ({ ...c, n: GAMES.filter(g => g.section === c.key).length })));
+      document.getElementById('tabs').innerHTML = all.map(t => `
+        <button class="tab" role="tab" aria-selected="${state.course === t.key}" data-course="${esc(t.key)}">
+          ${esc(t.name)}<span class="count">${t.n}</span>
+        </button>`).join('');
+    }
+
+    function renderStats() {
+      let plays = 0, ratings = 0;
+      Object.values(stats).forEach(s => { plays += s.views || 0; ratings += s.ratingCount || 0; });
+      document.getElementById('statGames').textContent = GAMES.length;
+      document.getElementById('statPlays').textContent = plays.toLocaleString();
+      document.getElementById('statRatings').textContent = ratings.toLocaleString();
+    }
+
+    function card(game, showCourse) {
+      const s = statFor(game.id);
+      const avg = avgFor(game.id);
+      const mine = getRated()[game.id] || 0;
+      const locked = mine > 0;
+
+      const stars = [1, 2, 3, 4, 5].map(n => `
+        <button type="button" class="${n <= mine ? 'on' : ''}" data-rate="${game.id}" data-stars="${n}"
+          aria-label="Rate ${n} star${n > 1 ? 's' : ''}" ${locked ? 'disabled' : ''}>${STAR}</button>`).join('');
+
+      const play = game.url
+        ? `<a class="play" href="${esc(game.url)}" target="_blank" rel="noopener" data-play="${game.id}">Play ${esc(game.title)}</a>`
+        : `<span class="play soon">Link coming soon</span>`;
+
+      return `
+        <article class="game">
+          <div class="game-who">
+            <div class="avatar" aria-hidden="true">${esc(initials(game.student))}</div>
+            <div>
+              <div class="student">${esc(game.student)}</div>
+              ${showCourse ? `<div class="course">${esc(courseName(game.section))}</div>` : ''}
+            </div>
+          </div>
+          <h3>${esc(game.title)}</h3>
+          <div class="game-stats">
+            <span class="avg">${s.ratingCount ? `<b>${avg.toFixed(1)}</b> average from ${s.ratingCount}` : 'Not rated yet'}</span>
+            <span>${(s.views || 0).toLocaleString()} ${s.views === 1 ? 'play' : 'plays'}</span>
+          </div>
+          <div class="rate-row">
+            <span>${locked ? 'Your rating' : 'Rate this game'}</span>
+            <span class="stars ${locked ? 'locked' : ''}">${stars}</span>
+          </div>
+          ${play}
+        </article>`;
+    }
+
+    function sorted(list) {
+      const by = {
+        rating:  (a, b) => avgFor(b.id) - avgFor(a.id) || (statFor(b.id).ratingCount || 0) - (statFor(a.id).ratingCount || 0),
+        plays:   (a, b) => (statFor(b.id).views || 0) - (statFor(a.id).views || 0),
+        title:   (a, b) => a.title.localeCompare(b.title),
+        student: (a, b) => a.student.localeCompare(b.student)
+      }[state.sort];
+      return by ? [...list].sort(by) : list;
+    }
+
+    function renderGallery() {
+      const q = state.query.trim().toLowerCase();
+      const list = GAMES.filter(g =>
+        (state.course === 'all' || g.section === state.course) &&
+        (!q || g.student.toLowerCase().includes(q) || g.title.toLowerCase().includes(q))
+      );
+
+      const gallery = document.getElementById('gallery');
+      const note = document.getElementById('resultNote');
+
+      if (!list.length) {
+        note.textContent = '';
+        gallery.innerHTML = `
+          <div class="empty">
+            <p>No games match "${esc(state.query)}".</p>
+            <button type="button" id="clearSearch">Clear search</button>
+          </div>`;
+        return;
+      }
+
+      note.textContent = q ? `${list.length} ${list.length === 1 ? 'game matches' : 'games match'} "${state.query.trim()}"` : '';
+
+      // Grouped by course when sorting by course; one flat grid otherwise
+      if (state.sort === 'course') {
+        gallery.innerHTML = COURSES
+          .map(c => ({ c, games: list.filter(g => g.section === c.key) }))
+          .filter(g => g.games.length)
+          .map(({ c, games }) => `
+            <section class="group" aria-label="${esc(c.name)}">
+              <div class="group-head"><h2>${esc(c.name)}</h2><span>${games.length} ${games.length === 1 ? 'game' : 'games'}</span></div>
+              <div class="grid">${games.map(g => card(g, false)).join('')}</div>
+            </section>`).join('');
+      } else {
+        gallery.innerHTML = `<div class="grid group">${sorted(list).map(g => card(g, true)).join('')}</div>`;
+      }
+    }
+
+    function renderAll() { renderTabs(); renderStats(); renderGallery(); }
+
+    // -------------------------------------------------------------
+    // 5. PLAYS AND RATINGS (saved to Google Sheets through Apps Script)
+    // -------------------------------------------------------------
+    function post(payload) {
+      if (!STATS_ENDPOINT) return;
+      try {
+        fetch(STATS_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          keepalive: true,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(() => {});
+      } catch (err) { console.warn('Could not send stats:', err); }
+    }
+
+    function bump(id, fn) {
+      const s = stats[id] = Object.assign({ views: 0, ratingTotal: 0, ratingCount: 0 }, stats[id]);
+      fn(s);
+    }
+
+    function recordPlay(id) {
+      post({ type: 'play', id });
+      bump(id, s => { s.views += 1; });
+      renderStats();
+      setTimeout(renderGallery, 300);
+    }
+
+    function rateGame(id, n) {
+      if (getRated()[id]) return;
+      saveRated(id, n);
+      post({ type: 'rating', id, stars: n });
+      bump(id, s => { s.ratingTotal += n; s.ratingCount += 1; });
+      renderStats();
+      renderGallery();
+    }
+
+    async function loadStats() {
+      if (!STATS_ENDPOINT) return;
+      try {
+        const res = await fetch(STATS_ENDPOINT);
+        const data = await res.json();
+        if (data && typeof data === 'object') { stats = data; renderStats(); renderGallery(); }
+      } catch (err) { console.warn('Could not load stats:', err); }
+    }
+
+    // -------------------------------------------------------------
+    // 6. EVENTS
+    // -------------------------------------------------------------
+    document.getElementById('tabs').addEventListener('click', e => {
+      const t = e.target.closest('[data-course]');
+      if (!t) return;
+      state.course = t.dataset.course;
+      renderTabs();
+      renderGallery();
+    });
+
+    document.getElementById('search').addEventListener('input', e => { state.query = e.target.value; renderGallery(); });
+    document.getElementById('sort').addEventListener('change', e => { state.sort = e.target.value; renderGallery(); });
+
+    document.getElementById('gallery').addEventListener('click', e => {
+      const rate = e.target.closest('[data-rate]');
+      if (rate) return rateGame(rate.dataset.rate, Number(rate.dataset.stars));
+      const play = e.target.closest('[data-play]');
+      if (play) return recordPlay(play.dataset.play);
+      if (e.target.id === 'clearSearch') {
+        state.query = '';
+        document.getElementById('search').value = '';
+        renderGallery();
+      }
+    });
+
+    async function init() {
+      try {
+        const res = await fetch(CATALOG_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        COURSES = data.courses || [];
+        GAMES = data.games || [];
+      } catch (err) {
+        console.error('Could not load the game catalog:', err);
+        document.getElementById('gallery').innerHTML =
+          '<p style="padding:48px 0;text-align:center;color:var(--muted)">The game list could not be loaded. If you opened this file directly from your computer, view it through GitHub Pages or a local web server instead.</p>';
+        return;
+      }
+      renderAll();
+      loadStats();
+    }
+
+    init();
   </script>
 </body>
 </html>

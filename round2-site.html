@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Games Showcase | Devon Prep</title>
+  <meta name="description" content="Play and rate the top games built by Devon Prep technology students.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --navy: #13284f;
+      --navy-deep: #0b1a36;
+      --navy-mid: #2a4478;
+      --gold: #c9a227;
+      --gold-soft: #f3e7bf;
+      --paper: #ffffff;
+      --surface: #eef1f6;
+      --line: #d6dce7;
+      --ink: #1a2233;
+      --muted: #5a6680;
+      --serif: 'Libre Caslon Text', Georgia, serif;
+      --sans: 'Public Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--sans); background: var(--surface); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    [hidden] { display: none !important; }
+
+    /* ---------- Masthead ---------- */
+    .masthead { background: var(--navy); color: #fff; border-bottom: 6px solid var(--gold); }
+    .masthead-top { display: flex; align-items: center; gap: 14px; padding: 22px 0 0; }
+    .crest { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--gold); display: grid; place-items: center; font: 700 1rem var(--serif); color: var(--gold); flex-shrink: 0; }
+    .school-name { font-family: var(--serif); font-size: 1.05rem; letter-spacing: 0.02em; color: #dbe3f2; }
+    .school-name small { display: block; font-family: var(--sans); font-size: 0.8rem; color: #9fb0cf; }
+
+    .hero { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; padding: 44px 0 36px; }
+    .hero h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.2rem, 5.5vw, 3.6rem); line-height: 1.05; letter-spacing: -0.01em; max-width: 15ch; }
+    .hero p { margin-top: 16px; color: #c8d3e8; font-size: 1.05rem; max-width: 54ch; }
+    .hero-stats { display: flex; gap: 28px; padding-bottom: 6px; }
+    .hero-stats div { text-align: right; }
+    .hero-stats strong { display: block; font: 400 2.4rem/1 var(--serif); color: var(--gold); }
+    .hero-stats span { font-size: 0.85rem; color: #9fb0cf; }
+
+    .tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex-shrink: 0; font: 600 0.95rem var(--sans); color: #c8d3e8; background: transparent; border: none; padding: 12px 20px 14px; border-radius: 8px 8px 0 0; cursor: pointer; text-decoration: none; }
+    .tab:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .tab[aria-current="page"] { background: var(--gold); color: var(--navy-deep); }
+
+    .demo-banner { background: var(--gold-soft); color: var(--navy-deep); font-size: 0.9rem; padding: 10px 0; border-bottom: 1px solid #e3d29a; }
+
+    /* ---------- Games view ---------- */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 28px 0 8px; }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip { font: 600 0.88rem var(--sans); color: var(--navy); background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+    .chip[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .sort { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .sort label { font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+    .sort select { font: 500 0.95rem var(--sans); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; cursor: pointer; }
+
+    main { padding: 20px 0 72px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 20px; }
+
+    .game { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    .cover { position: relative; aspect-ratio: 16 / 9; background: var(--navy); overflow: hidden; }
+    .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cover-fallback { position: absolute; inset: 0; padding: 18px 20px; display: flex; flex-direction: column; justify-content: flex-end; background:
+        radial-gradient(circle at 85% 15%, rgba(201,162,39,0.28), transparent 45%), var(--navy); color: #fff; }
+    .cover-fallback { justify-content: center; align-items: center; }
+    .cover-fallback span { font: 400 3.4rem/1 var(--serif); color: var(--gold); letter-spacing: 0.04em; }
+    .cover-fallback::after { content: ''; position: absolute; left: 20px; right: 20px; bottom: 0; height: 4px; background: var(--gold); }
+    .rank { position: absolute; top: 12px; left: 12px; background: var(--gold); color: var(--navy-deep); font: 700 0.85rem var(--sans); padding: 4px 10px; border-radius: 6px; }
+
+    .game-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .game h3 { font: 400 1.3rem/1.25 var(--serif); color: var(--navy-deep); }
+    .byline { font-size: 0.9rem; color: var(--muted); }
+    .byline b { color: var(--ink); font-weight: 600; }
+    .game-stats { display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--muted); margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
+    .game-stats b { color: var(--ink); }
+
+    .rate-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--muted); }
+    .stars { display: inline-flex; gap: 2px; }
+    .stars button { background: none; border: none; padding: 2px; cursor: pointer; line-height: 0; color: var(--line); }
+    .stars svg { width: 20px; height: 20px; fill: currentColor; }
+    .stars button.on { color: var(--gold); }
+    .stars:not(.locked):hover button { color: var(--gold); }
+    .stars:not(.locked) button:hover ~ button { color: var(--line); }
+    .stars.locked button { cursor: default; }
+
+    .play { display: block; text-align: center; font: 700 0.95rem var(--sans); color: #fff; background: var(--navy); text-decoration: none; padding: 11px; border-radius: 8px; }
+    .play:hover { background: var(--navy-deep); }
+
+    /* ---------- By the #'s view ---------- */
+    .section { margin-top: 40px; }
+    .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; padding-bottom: 12px; margin-bottom: 18px; border-bottom: 2px solid var(--navy); }
+    .section-head h2 { font: 400 1.6rem var(--serif); color: var(--navy); }
+    .section-head p { color: var(--muted); font-size: 0.9rem; }
+
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .kpi { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+    .kpi strong { display: block; font: 400 2.3rem/1.1 var(--serif); color: var(--navy); }
+    .kpi span { font-size: 0.88rem; color: var(--muted); }
+    .kpi em { display: block; font-style: normal; font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+
+    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+    .two-up { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel h3 { font: 600 1rem var(--sans); color: var(--ink); margin-bottom: 4px; }
+    .panel .note { font-size: 0.85rem; color: var(--muted); margin-bottom: 14px; }
+    .chart-box { position: relative; height: 260px; }
+
+    .tiers { display: flex; flex-direction: column; gap: 10px; }
+    .tier { display: grid; grid-template-columns: 64px 1fr 92px; align-items: center; gap: 12px; font-size: 0.9rem; }
+    .tier-label { font-weight: 600; color: var(--navy); }
+    .tier-bar { height: 14px; background: var(--surface); border-radius: 7px; overflow: hidden; }
+    .tier-bar i { display: block; height: 100%; background: var(--gold); border-radius: 7px; }
+    .tier-val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .ratio { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--muted); }
+    .ratio b { font: 400 1.6rem var(--serif); color: var(--navy); margin-right: 6px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.82rem; padding: 0 10px 10px; border-bottom: 1px solid var(--line); }
+    td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    tr:last-child td { border-bottom: none; }
+    .t-title { font-weight: 600; color: var(--navy-deep); }
+    .t-sub { font-size: 0.82rem; color: var(--muted); }
+    .delta-up { color: #1d7a4a; font-weight: 600; }
+    .table-scroll { overflow-x: auto; }
+
+    .updated { margin-top: 28px; font-size: 0.85rem; color: var(--muted); }
+
+    footer { background: var(--navy-deep); color: #9fb0cf; font-size: 0.85rem; padding: 24px 0; }
+
+    @media (max-width: 860px) {
+      .kpis { grid-template-columns: 1fr 1fr; }
+      .two-up { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .wrap { padding: 0 16px; }
+      .hero { grid-template-columns: 1fr; padding: 30px 0 26px; gap: 20px; }
+      .hero-stats div { text-align: left; }
+      .sort { margin-left: 0; width: 100%; }
+      .sort select { flex: 1; }
+      .tier { grid-template-columns: 52px 1fr 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="wrap">
+      <div class="masthead-top">
+        <div class="crest" aria-hidden="true">DP</div>
+        <div class="school-name">Devon Preparatory School<small>Technology Department</small></div>
+      </div>
+
+      <div class="hero">
+        <div>
+          <h1 id="heroTitle">Student Games Showcase</h1>
+          <p id="heroText">The top student-built games from Round 1, hand-tested and back for Round 2. Play one, then leave a rating.</p>
+        </div>
+        <div class="hero-stats">
+          <div><strong id="statGames">0</strong><span>games</span></div>
+          <div><strong id="statPlays">0</strong><span>plays</span></div>
+          <div><strong id="statRatings">0</strong><span>ratings</span></div>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Sections">
+        <a class="tab" href="#games" data-view="games">Games</a>
+        <a class="tab" href="#numbers" data-view="numbers">By the #'s</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="demo-banner" id="demoBanner" hidden>
+    <div class="wrap">Showing sample numbers. Add your Apps Script URL to API_URL to show live counts.</div>
+  </div>
+
+  <!-- ================= GAMES ================= -->
+  <section id="view-games">
+    <div class="wrap">
+      <div class="toolbar">
+        <div class="filters" id="filters" role="group" aria-label="Filter by grade"></div>
+        <div class="sort">
+          <label for="sort">Sort by</label>
+          <select id="sort">
+            <option value="rank">Round 1 rank</option>
+            <option value="rating">Highest rated</option>
+            <option value="plays">Most played</option>
+            <option value="title">Game title, A to Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <main class="wrap"><div class="grid" id="grid"></div></main>
+  </section>
+
+  <!-- ================= BY THE #'S ================= -->
+  <section id="view-numbers" hidden>
+    <main class="wrap">
+      <div class="section">
+        <div class="section-head"><h2>All-time totals</h2><p>Round 1 plus Round 2, counted live</p></div>
+        <div class="kpis" id="kpis"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>How the ratings break down</h2><p>Round 2 ratings</p></div>
+        <div class="two-up">
+          <div class="panel">
+            <h3>Rating tiers</h3>
+            <p class="note">Share of all ratings at each star level</p>
+            <div class="tiers" id="tiers"></div>
+            <div class="ratio" id="ratio"></div>
+          </div>
+          <div class="panel">
+            <h3>7th grade vs 8th grade</h3>
+            <p class="note">Plays and average rating for games made in each grade</p>
+            <div class="chart-box"><canvas id="gradeChart" aria-label="Plays and average rating by grade"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>Plays over time</h2><p>Daily plays since relaunch</p></div>
+        <div class="panel"><div class="chart-box"><canvas id="historyChart" aria-label="Daily plays over time"></canvas></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head"><h2>Leaderboard</h2><p>Round 2 games, with Round 1 for comparison</p></div>
+        <div class="panel table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Game</th>
+                <th class="num">Round 1 plays</th><th class="num">Round 2 plays</th>
+                <th class="num">Avg rating</th><th class="num">Ratings</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="updated" id="updated"></p>
+    </main>
+  </section>
+
+  <footer>
+    <div class="wrap">Devon Preparatory School, Technology Department. Games open in a new tab.</div>
+  </footer>
+
+  <script>
+    // -------------------------------------------------------------
+    // 1. SETTINGS
+    // API_URL: your Apps Script web app URL (Deploy > Web app).
+    // Leave empty to preview the page with sample numbers.
+    // -------------------------------------------------------------
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwb9LlvE4FLDSA8anTONG9t2Bysvakc9AZatGekqy9DusmVL9rLgtSHD_4dKLgO0oyO/exec';
+
+    // The games in the relaunch, in Round 1 rank order (rank 1 first).
+    // Fill this in after testing: 15 to 20 game IDs.
+    const FEATURED = [];
+
+    // Courses map to grades: Tech Ex is 7th grade, Adv Tech is 8th grade.
+    const GRADE = { 'Tech Ex s1': '7th', 'Tech Ex s2': '7th', 'Adv Tech s1': '8th', 'Adv Tech s2': '8th' };
+
+    // -------------------------------------------------------------
+    // 2. ALL GAMES
+    // thumb: link to the student's cover image (16:9, 1280x720).
+    // From Google Drive: share the image as "Anyone with the link",
+    // then use https://lh3.googleusercontent.com/d/FILE_ID
+    // Games without a thumb get a navy title cover.
+    // -------------------------------------------------------------
+    const GAMES = [
+      { id: "PRJ-001", section: "Adv Tech s1", student: "Lucas V.", title: "Untitled Game", url: "https://sites.google.com/d/1gj08EwJowUhfRat4p5X9Zx2bMWxZjzoY/p/1JI30XOBEJ2HVse0-N7q1cNjQWEXHGmQP/edit", thumb: "" },
+      { id: "PRJ-002", section: "Adv Tech s1", student: "Landon Leber", title: "Untitled Game", url: "https://sites.google.com/d/1JI8J3W2NIkmKwY0CQDBQG25Lac-mqPeE/p/1eMGOONce4Z-wCiM-LepQkWmDh6QO8SiS/edit", thumb: "" },
+      { id: "PRJ-003", section: "Adv Tech s1", student: "Digby Moro", title: "3D Retro Arcade Maze", url: "https://sites.google.com/devonprep.com/3dretroarcademaze/full-page-embed", thumb: "" },
+      { id: "PRJ-004", section: "Adv Tech s1", student: "Liam Gunn", title: "Retro Bowl 2D Deluxe", url: "https://sites.google.com/devonprep.com/retro-bowl-2d-deluxe/full-page-embed", thumb: "" },
+      { id: "PRJ-005", section: "Adv Tech s1", student: "Hugo Derval", title: "Number Guess Hype", url: "https://sites.google.com/devonprep.com/number-guess-hype?usp=sharing", thumb: "" },
+      { id: "PRJ-006", section: "Adv Tech s1", student: "Nolan Minbiole", title: "Snake Party Game", url: "https://sites.google.com/devonprep.com/snake-party-game/full-page-embed", thumb: "" },
+      { id: "PRJ-007", section: "Adv Tech s1", student: "Fernando Maldonado Galindo", title: "A Small World Cup Game", url: "https://sites.google.com/devonprep.com/a-small-world-cup-game-2/a-small-world-cup", thumb: "" },
+      { id: "PRJ-008", section: "Adv Tech s1", student: "Gavin Ward", title: "Casino Game / Civics Economics", url: "https://sites.google.com/devonprep.com/civics-economics/full-page-embed", thumb: "" },
+      { id: "PRJ-009", section: "Adv Tech s1", student: "Nate Barron", title: "OmniCalc School Calculator App", url: "https://sites.google.com/devonprep.com/omnicalcschool", thumb: "" },
+      { id: "PRJ-010", section: "Adv Tech s1", student: "Cole", title: "Hush Hop Online Game", url: "https://sites.google.com/view/hushhop/home", thumb: "" },
+      { id: "PRJ-011", section: "Adv Tech s1", student: "Edward Adamczyk", title: "Wild West Shootout", url: "https://sites.google.com/devonprep.com/wildwest-shootout?usp=sharing", thumb: "" },
+      { id: "PRJ-012", section: "Adv Tech s2", student: "Landon Leber", title: "Number Guesser", url: "https://sites.google.com/d/1imw__qRKuX75p66g3rL_wfwB9l9kvw93/p/1Dy0hn8csF7Xv9E6cO5rH5P3SkRJa5pv7/edit?pli=1", thumb: "" },
+      { id: "PRJ-013", section: "Adv Tech s2", student: "Zangara", title: "Pixel Dash Adventure", url: "https://sites.google.com/devonprep.com/pixel-dash-adventure/full-page-embed", thumb: "" },
+      { id: "PRJ-014", section: "Adv Tech s2", student: "Jameson Kelly", title: "Untitled Game", url: "https://sites.google.com/d/1oUNKWeHVlaWH7kHT8eK3MaOkMo7Dl86s/p/1EGxYHCggS4hzSlme5rwwrdEeldmNbQtb/edit?pli=1", thumb: "" },
+      { id: "PRJ-015", section: "Adv Tech s2", student: "Liam Milliken", title: "Fantasy Football", url: "https://sites.google.com/devonprep.com/liamfantasyfootball-com?usp=sharing", thumb: "" },
+      { id: "PRJ-016", section: "Adv Tech s2", student: "Brendan", title: "Custom Game Site", url: "https://sites.google.com/d/1r63xnL7cXqHFgSYDJs3UXWWO4Q8bjLDw/p/1YRNHL-tSi36-yuxn8vOIlcT3iYDWqSFI/edit", thumb: "" },
+      { id: "PRJ-017", section: "Adv Tech s2", student: "Spencer Dsouza", title: "Web Application", url: "https://sites.google.com/d/1idphY3FMtVOnPmSJSWvWFScN8rAVi0xm/p/1F3KsBlaDtmVoSRLtjjH1C8AirRUv2pF_/edit", thumb: "" },
+      { id: "PRJ-018", section: "Adv Tech s2", student: "G Dog Strenis", title: "Interactive Game Hub", url: "https://sites.google.com/devonprep.com/devonprep/full-page-embed", thumb: "" },
+      { id: "PRJ-019", section: "Adv Tech s2", student: "Zack Shelton", title: "Flight Simulator", url: "https://sites.google.com/devonprep.com/zacks-flying-simulator/full-page-embed", thumb: "" },
+      { id: "PRJ-020", section: "Adv Tech s2", student: "Adam Aufiero", title: "Texas Hold'em Poker", url: "https://sites.google.com/devonprep.com/texasholdempoker/full-page-embed", thumb: "" },
+      { id: "PRJ-021", section: "Adv Tech s2", student: "Conor Emery", title: "3D Minecraft Game", url: "https://sites.google.com/devonprep.com/3dminecraftgame/full-page-embed", thumb: "" },
+      { id: "PRJ-022", section: "Adv Tech s2", student: "Bennett Caufield", title: "Fortnite 3D Battle Royale", url: "https://sites.google.com/devonprep.com/fortnite-3d-battle-royale/full-page-embed", thumb: "" },
+      { id: "PRJ-060", section: "Adv Tech s2", student: "Benjamin Andrade Flores", title: "3D Flight Simulator", url: "https://sites.google.com/devonprep.com/3d-flight-simulator/full-page-embed", thumb: "" },
+      { id: "PRJ-023", section: "Adv Tech s2", student: "Zachary Huffman", title: "Flight Babylon", url: "https://sites.google.com/devonprep.com/flightbabylon/home", thumb: "" },
+      { id: "PRJ-044", section: "Tech Ex s1", student: "Nathan Korenman", title: "Mouse Master Overclocked", url: "https://sites.google.com/devonprep.com/mouse-master-overclocked/full-page-embed", thumb: "" },
+      { id: "PRJ-045", section: "Tech Ex s1", student: "Edison Li", title: "Poly F1 Championship", url: "https://sites.google.com/devonprep.com/poly-f1-cchampionship/full-page-embed", thumb: "" },
+      { id: "PRJ-046", section: "Tech Ex s1", student: "Spencer Dsouza", title: "Street Racers", url: "https://sites.google.com/devonprep.com/street-racers/home", thumb: "" },
+      { id: "PRJ-047", section: "Tech Ex s1", student: "Jimmy Epperson", title: "Teddy's Quest for Sprite", url: "https://sites.google.com/devonprep.com/teddysquestforsprite/full-page-embed", thumb: "" },
+      { id: "PRJ-048", section: "Tech Ex s1", student: "Aiden Brannen", title: "Blacksmith Legends", url: "https://sites.google.com/devonprep.com/blacksmnith-legends/full-page-embed", thumb: "" },
+      { id: "PRJ-049", section: "Tech Ex s1", student: "Teddy O'Leary", title: "Untitled Game", url: "https://sites.google.com/d/14J4LTcJaFz2mOGfkV48ot00PuMI25Mqj/p/1y6MaY7DgqreLaZRZkMnyC-D4z7gEXdZW/edit", thumb: "" },
+      { id: "PRJ-050", section: "Tech Ex s1", student: "Seamus Brophy", title: "Untitled Game", url: "https://sites.google.com/d/1JOv_OVf9U09My0nOKeHphJik2Q0cffuO/p/1lvkzFkiCGOTsTSjWiBOB5L8FgQZCrUmw/edit", thumb: "" },
+      { id: "PRJ-051", section: "Tech Ex s1", student: "Victor Crimins", title: "Relic Hunter", url: "https://sites.google.com/devonprep.com/relic-hunter/full-page-embed", thumb: "" },
+      { id: "PRJ-052", section: "Tech Ex s1", student: "Keenan MacDougal", title: "Head Football Champions", url: "https://sites.google.com/devonprep.com/headfootballchampions/full-page-embed", thumb: "" },
+      { id: "PRJ-053", section: "Tech Ex s1", student: "Nolan English", title: "College Football Career Dynasty", url: "https://sites.google.com/devonprep.com/collegefootballcareerdynastysi/full-page-embed", thumb: "" },
+      { id: "PRJ-054", section: "Tech Ex s1", student: "Patrick Cognato", title: "Arcade Baseball", url: "https://sites.google.com/devonprep.com/arcade-baseball/full-page-embed", thumb: "" },
+      { id: "PRJ-055", section: "Tech Ex s1", student: "Samuel Schaffer", title: "Puppet Legend Wildcrest", url: "https://sites.google.com/devonprep.com/puppet-legend-wildcrest/full-page-embed", thumb: "" },
+      { id: "PRJ-056", section: "Tech Ex s1", student: "Charlie Neill", title: "Rally Drift 3D", url: "https://sites.google.com/devonprep.com/rally-drift-3d/full-page-embed", thumb: "" },
+      { id: "PRJ-057", section: "Tech Ex s1", student: "Jameson Ash", title: "Olympic Swim Meet", url: "https://sites.google.com/devonprep.com/olympic-swim-meet/full-page-embed", thumb: "" },
+      { id: "PRJ-058", section: "Tech Ex s1", student: "Nick Pettia", title: "Lebron Ascension Tap Overlord", url: "https://sites.google.com/devonprep.com/lebron-ascension-tap-overlord/full-page-embed", thumb: "" },
+      { id: "PRJ-059", section: "Tech Ex s1", student: "Johnny Williamson", title: "Chip's Arena Battle Game", url: "https://sites.google.com/devonprep.com/chips-arena-battle-game/full-page-embed", thumb: "" },
+      { id: "PRJ-024", section: "Tech Ex s2", student: "Kyle", title: "Hallow Slasher", url: "https://sites.google.com/devonprep.com/hallow-slasher/full-page-embed", thumb: "" },
+      { id: "PRJ-025", section: "Tech Ex s2", student: "Tommy Heater", title: "Banana Raider", url: "https://sites.google.com/devonprep.com/banana-raider-game/home", thumb: "" },
+      { id: "PRJ-026", section: "Tech Ex s2", student: "Brennan", title: "Voxelmon Kanto 3D", url: "https://sites.google.com/devonprep.com/voxelmon-kanto-3d/full-page-embed", thumb: "" },
+      { id: "PRJ-027", section: "Tech Ex s2", student: "Chuck Veith", title: "3D Block Runner", url: "https://sites.google.com/d/11wHDm1qFfMHINxZOcGKiQq9ZfyTB0PzW/p/1gk6DXnsrZ7SDKOjY1-_D3Zfmfe0FaQr5/edit", thumb: "" },
+      { id: "PRJ-028", section: "Tech Ex s2", student: "Blake", title: "Slither IO", url: "https://sites.google.com/devonprep.com/blakes-slither-io?usp=sharing", thumb: "" },
+      { id: "PRJ-029", section: "Tech Ex s2", student: "Matteo", title: "5 Nights at Devon Prep", url: "https://sites.google.com/devonprep.com/5-nights-at-devon-prep?usp=sharing", thumb: "" },
+      { id: "PRJ-030", section: "Tech Ex s2", student: "Joseph DeMaio", title: "Siege", url: "https://sites.google.com/d/1GN0Rj6OYkWOu8ey7Cw78D9vd9noXFbB5/p/145L20Uo2CLT63Ou2ZjNJThM5xtMmH6re/edit?pli=1", thumb: "" },
+      { id: "PRJ-031", section: "Tech Ex s2", student: "Henry Fiorini", title: "Custom App", url: "https://sites.google.com/d/1VEWX-hqID93G0AbYyirEDsJUf0sL1D1k/p/1AP_p9KJDp68p7OKMlPB50x0u5JrEvo2M/edit?pli=1", thumb: "" },
+      { id: "PRJ-032", section: "Tech Ex s2", student: "Daniel Logue", title: "Car Game", url: "https://sites.google.com/devonprep.com/car-game/full-page-embed", thumb: "" },
+      { id: "PRJ-033", section: "Tech Ex s2", student: "James McGrory", title: "Find the Needle in a Haystack", url: "https://sites.google.com/devonprep.com/1-billion-hay-straws-search-fo/full-page-embed", thumb: "" },
+      { id: "PRJ-034", section: "Tech Ex s2", student: "Cameron Burch", title: "Tea Cup Bob", url: "https://sites.google.com/devonprep.com/cameron-tea-cup-bob/home", thumb: "" },
+      { id: "PRJ-035", section: "Tech Ex s2", student: "Sean Polizzo", title: "Blox Fruits Clicker", url: "https://sites.google.com/d/1cT-mVA6tXORVi0hfUl7hG986MiK7muQB/p/13IusWX2Axlr2HmLWOv-u1MislRhLEn4V/edit", thumb: "" },
+      { id: "PRJ-036", section: "Tech Ex s2", student: "Jael Coursey Soto", title: "Puck Blitz 3D", url: "https://sites.google.com/devonprep.com/puckblitz3d-xpchampions/full-page-embed", thumb: "" },
+      { id: "PRJ-037", section: "Tech Ex s2", student: "George Bayers", title: "3D Music Game", url: "https://sites.google.com/devonprep.com/3d-music-game/full-page-embed", thumb: "" },
+      { id: "PRJ-038", section: "Tech Ex s2", student: "Todd", title: "3D Arcade Lacrosse", url: "https://sites.google.com/devonprep.com/3d-arcade-lacrosse-todd/full-page-embed", thumb: "" },
+      { id: "PRJ-039", section: "Tech Ex s2", student: "Zac Chilkatowsky", title: "3D 2-on-1 Ice Hockey", url: "https://sites.google.com/devonprep.com/3d-2-on-1-ice-hockey?usp=sharing", thumb: "" },
+      { id: "PRJ-040", section: "Tech Ex s2", student: "Donny Belles", title: "Custom Game Hub", url: "https://sites.google.com/d/1Hmoc8CDv6eQyZ8lKPHeeTAHnhxJMOVWo/p/1ND8OzXfurVaBEEln7VC1dc4LjtfWmAOT/edit?pli=1", thumb: "" },
+      { id: "PRJ-041", section: "Tech Ex s2", student: "Max Mundy", title: "Project Site", url: "https://sites.google.com/d/1Xmz_MoHanxr8yTOrYF_JZhPdRVaixNyI/p/1DLWOHWBAhTranYYL1jFK9ADpdW_VxNn2/edit", thumb: "" }
+    ];
+
+    // -------------------------------------------------------------
+    // 3. STATE AND HELPERS
+    // -------------------------------------------------------------
+    const DEMO = !API_URL;
+    const state = { grade: 'all', sort: 'rank' };
+    let data = { games: {}, daily: [], archive: {}, updated: null };
+
+    const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
+    const featured = () => (FEATURED.length ? FEATURED : demoFeatured()).map(id => byId[id]).filter(Boolean);
+
+    const RATED_KEY = 'dpShowcaseRatedR2';
+    const getRated = () => { try { return JSON.parse(localStorage.getItem(RATED_KEY)) || {}; } catch { return {}; } };
+    const saveRated = (id, n) => { try { const r = getRated(); r[id] = n; localStorage.setItem(RATED_KEY, JSON.stringify(r)); } catch {} };
+
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    const fmt = n => Number(n || 0).toLocaleString();
+    const live = id => data.games[id] || { plays: 0, stars: [0,0,0,0,0] };
+    const arch = id => data.archive[id] || { plays: 0, stars: [0,0,0,0,0] };
+    const count = s => s.reduce((a, b) => a + b, 0);
+    const avg = s => { const c = count(s); return c ? s.reduce((t, n, i) => t + n * (i + 1), 0) / c : 0; };
+    const monogram = t => t.replace(/[^A-Za-z0-9 ]/g, '').split(/\s+/).filter(w => w && !/^(a|an|the|of|at|in|for)$/i.test(w)).slice(0, 3).map(w => w[0].toUpperCase()).join('');
+    const rankOf = id => featured().findIndex(g => g.id === id) + 1;
+
+    const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/></svg>';
+
+    // -------------------------------------------------------------
+    // 4. GAMES VIEW
+    // -------------------------------------------------------------
+    function renderFilters() {
+      const opts = [['all', 'All grades'], ['7th', '7th grade'], ['8th', '8th grade']];
+      document.getElementById('filters').innerHTML = opts.map(([k, label]) =>
+        `<button type="button" class="chip" data-grade="${k}" aria-pressed="${state.grade === k}">${label}</button>`).join('');
+    }
+
+    function cover(g) {
+      const img = g.thumb ? `<img src="${esc(g.thumb)}" alt="Cover art for ${esc(g.title)}" loading="lazy" onerror="this.remove()">` : '';
+      return `<div class="cover"><div class="cover-fallback" aria-hidden="true"><span>${esc(monogram(g.title))}</span></div>${img}<span class="rank">#${rankOf(g.id)}</span></div>`;
+    }
+
+    function card(g) {
+      const s = live(g.id).stars, c = count(s);
+      const mine = getRated()[g.id] || 0, locked = mine > 0;
+      const stars = [1,2,3,4,5].map(n => `<button type="button" class="${n <= mine ? 'on' : ''}" data-rate="${g.id}" data-stars="${n}"
+          aria-label="Rate ${n} star${n > 1 ? 's' : ''}" ${locked ? 'disabled' : ''}>${STAR}</button>`).join('');
+      return `
+        <article class="game">
+          ${cover(g)}
+          <div class="game-body">
+            <h3>${esc(g.title)}</h3>
+            <div class="byline">by <b>${esc(g.student)}</b>, ${GRADE[g.section]} grade</div>
+            <div class="game-stats">
+              <span>${c ? `<b>${avg(s).toFixed(1)}</b> average from ${c}` : 'Not rated yet'}</span>
+              <span>${fmt(live(g.id).plays)} ${live(g.id).plays === 1 ? 'play' : 'plays'}</span>
+            </div>
+            <div class="rate-row">
+              <span>${locked ? 'Your rating' : 'Rate this game'}</span>
+              <span class="stars ${locked ? 'locked' : ''}">${stars}</span>
+            </div>
+            <a class="play" href="${esc(g.url)}" target="_blank" rel="noopener" data-play="${g.id}">Play ${esc(g.title)}</a>
+          </div>
+        </article>`;
+    }
+
+    function renderGames() {
+      let list = featured().filter(g => state.grade === 'all' || GRADE[g.section] === state.grade);
+      const sorters = {
+        rating: (a, b) => avg(live(b.id).stars) - avg(live(a.id).stars),
+        plays:  (a, b) => live(b.id).plays - live(a.id).plays,
+        title:  (a, b) => a.title.localeCompare(b.title)
+      };
+      if (sorters[state.sort]) list = [...list].sort(sorters[state.sort]);
+      document.getElementById('grid').innerHTML = list.map(card).join('');
+    }
+
+    // -------------------------------------------------------------
+    // 5. BY THE #'S VIEW
+    // -------------------------------------------------------------
+    let gradeChart, historyChart;
+
+    function totals() {
+      let r1Plays = 0, r2Plays = 0;
+      const r1Stars = [0,0,0,0,0], r2Stars = [0,0,0,0,0];
+      Object.values(data.archive).forEach(a => { r1Plays += a.plays; a.stars.forEach((n, i) => r1Stars[i] += n); });
+      Object.values(data.games).forEach(g => { r2Plays += g.plays; g.stars.forEach((n, i) => r2Stars[i] += n); });
+      return { r1Plays, r2Plays, r1Stars, r2Stars };
+    }
+
+    function renderHeroStats() {
+      const t = totals();
+      document.getElementById('statGames').textContent = featured().length;
+      document.getElementById('statPlays').textContent = fmt(t.r1Plays + t.r2Plays);
+      document.getElementById('statRatings').textContent = fmt(count(t.r1Stars) + count(t.r2Stars));
+    }
+
+    function renderNumbers() {
+      const t = totals();
+      const allStars = t.r1Stars.map((n, i) => n + t.r2Stars[i]);
+
+      document.getElementById('kpis').innerHTML = [
+        [fmt(t.r1Plays + t.r2Plays), 'total plays', `${fmt(t.r1Plays)} in Round 1, ${fmt(t.r2Plays)} in Round 2`],
+        [fmt(count(allStars)), 'total ratings', `${fmt(count(t.r1Stars))} in Round 1, ${fmt(count(t.r2Stars))} in Round 2`],
+        [avg(allStars).toFixed(2), 'average rating', 'out of 5 stars, all time'],
+        [fmt(featured().length), 'games in Round 2', `from ${GAMES.length} games in Round 1`]
+      ].map(([v, l, e]) => `<div class="kpi"><strong>${v}</strong><span>${l}</span><em>${e}</em></div>`).join('');
+
+      // Rating tiers (Round 2)
+      const s = t.r2Stars, c = count(s) || 1;
+      document.getElementById('tiers').innerHTML = [5,4,3,2,1].map(n => {
+        const pct = (s[n - 1] / c) * 100;
+        return `<div class="tier"><span class="tier-label">${n} star${n > 1 ? 's' : ''}</span>
+          <span class="tier-bar"><i style="width:${pct.toFixed(1)}%"></i></span>
+          <span class="tier-val">${pct.toFixed(0)}% (${fmt(s[n - 1])})</span></div>`;
+      }).join('');
+      const high = s[3] + s[4], low = s[0] + s[1];
+      document.getElementById('ratio').innerHTML = low
+        ? `<b>${(high / low).toFixed(1)} : 1</b> high ratings (4–5 stars) for every low rating (1–2 stars)`
+        : `<b>${fmt(high)} : 0</b> no low ratings yet`;
+
+      // 7th vs 8th
+      const grades = ['7th', '8th'].map(gr => {
+        const ids = featured().filter(g => GRADE[g.section] === gr).map(g => g.id);
+        const st = [0,0,0,0,0]; let plays = 0;
+        ids.forEach(id => { plays += live(id).plays; live(id).stars.forEach((n, i) => st[i] += n); });
+        return { gr, plays, avg: avg(st) };
+      });
+      gradeChart && gradeChart.destroy();
+      gradeChart = new Chart(document.getElementById('gradeChart'), {
+        type: 'bar',
+        data: {
+          labels: grades.map(g => `${g.gr} grade`),
+          datasets: [
+            { label: 'Plays', data: grades.map(g => g.plays), backgroundColor: '#13284f', borderRadius: 4, yAxisID: 'y' },
+            { label: 'Average rating', data: grades.map(g => +g.avg.toFixed(2)), backgroundColor: '#c9a227', borderRadius: 4, yAxisID: 'y2' }
+          ]
+        },
+        options: chartOpts({
+          y:  { beginAtZero: true, title: { display: true, text: 'Plays' } },
+          y2: { beginAtZero: true, max: 5, position: 'right', grid: { display: false }, title: { display: true, text: 'Avg rating' } }
+        })
+      });
+
+      // History
+      historyChart && historyChart.destroy();
+      historyChart = new Chart(document.getElementById('historyChart'), {
+        type: 'line',
+        data: {
+          labels: data.daily.map(d => new Date(d.date + 'T12:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })),
+          datasets: [{ label: 'Plays', data: data.daily.map(d => d.plays), borderColor: '#13284f', backgroundColor: '#13284f', pointRadius: 3, tension: 0.25 }]
+        },
+        options: chartOpts({ y: { beginAtZero: true } }, false)
+      });
+
+      // Leaderboard
+      const rows = featured().map(g => ({ g, r1: arch(g.id).plays, r2: live(g.id).plays, s: live(g.id).stars }))
+        .sort((a, b) => b.r2 - a.r2 || avg(b.s) - avg(a.s));
+      document.getElementById('leaderboard').innerHTML = rows.map((r, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><div class="t-title">${esc(r.g.title)}</div><div class="t-sub">${esc(r.g.student)}, ${GRADE[r.g.section]} grade</div></td>
+          <td class="num">${fmt(r.r1)}</td>
+          <td class="num">${fmt(r.r2)}</td>
+          <td class="num">${count(r.s) ? avg(r.s).toFixed(1) : '–'}</td>
+          <td class="num">${fmt(count(r.s))}</td>
+        </tr>`).join('');
+
+      document.getElementById('updated').textContent = data.updated
+        ? `Last updated ${new Date(data.updated).toLocaleString()}. Numbers refresh every minute.` : '';
+    }
+
+    function chartOpts(scales, legend = true) {
+      return {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: legend, position: 'bottom', labels: { font: { family: 'Public Sans' }, color: '#5a6680' } } },
+        scales: Object.fromEntries(Object.entries({ x: { grid: { display: false } }, ...scales }).map(([k, v]) =>
+          [k, { ...v, ticks: { color: '#5a6680', font: { family: 'Public Sans' } } }]))
+      };
+    }
+
+    // -------------------------------------------------------------
+    // 6. DATA: LIVE FROM THE SHEET, OR SAMPLE NUMBERS
+    // -------------------------------------------------------------
+    async function load() {
+      if (DEMO) { data = demoData(); return; }
+      try {
+        const res = await fetch(API_URL + '?action=stats');
+        data = await res.json();
+      } catch (err) {
+        console.error('Could not load stats:', err);
+      }
+    }
+
+    function send(payload) {
+      if (DEMO) return;
+      fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+        .catch(err => console.error('Could not save:', err));
+    }
+
+    function recordPlay(id) {
+      send({ action: 'play', id });
+      live(id).plays++; data.games[id] = live(id);
+      setTimeout(renderAll, 300);
+    }
+
+    function rateGame(id, n) {
+      if (getRated()[id]) return;
+      saveRated(id, n);
+      send({ action: 'rate', id, stars: n });
+      const g = live(id); g.stars[n - 1]++; data.games[id] = g;
+      renderAll();
+    }
+
+    // Sample numbers so the page can be previewed before the Sheet is wired up
+    function demoFeatured() {
+      return ['PRJ-004','PRJ-029','PRJ-022','PRJ-021','PRJ-036','PRJ-019','PRJ-026','PRJ-020','PRJ-024','PRJ-045',
+              'PRJ-038','PRJ-013','PRJ-055','PRJ-052','PRJ-006','PRJ-033','PRJ-047','PRJ-056'];
+    }
+    function demoData() {
+      let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+      const games = {}, archive = {}, daily = [];
+      demoFeatured().forEach((id, i) => {
+        const w = 1 - i / 25;
+        archive[id] = { plays: Math.round(60 + 140 * w * rnd() + 40 * w), stars: [1,2,5,10,15].map(n => Math.round(n * w * (0.5 + rnd()))) };
+        games[id] = { plays: Math.round(20 + 60 * w * rnd()), stars: [0,1,3,6,9].map(n => Math.round(n * (0.4 + rnd()))) };
+      });
+      GAMES.forEach(g => { if (!archive[g.id]) archive[g.id] = { plays: Math.round(10 + 40 * rnd()), stars: [1,2,3,3,2].map(n => Math.round(n * rnd())) }; });
+      const start = new Date('2026-11-23T12:00');
+      for (let d = 0; d < 14; d++) {
+        const dt = new Date(start); dt.setDate(start.getDate() + d);
+        if ([5, 6, 12, 13].includes(d)) continue;
+        daily.push({ date: dt.toISOString().slice(0, 10), plays: Math.round(30 + 90 * rnd() * (d < 3 ? 1.6 : 1)) });
+      }
+      return { games, archive, daily, updated: new Date().toISOString() };
+    }
+
+    // -------------------------------------------------------------
+    // 7. ROUTING AND EVENTS
+    // -------------------------------------------------------------
+    function currentView() { return location.hash === '#numbers' ? 'numbers' : 'games'; }
+
+    function renderAll() {
+      const v = currentView();
+      document.querySelectorAll('.tab').forEach(t => t.dataset.view === v ? t.setAttribute('aria-current', 'page') : t.removeAttribute('aria-current'));
+      document.getElementById('view-games').hidden = v !== 'games';
+      document.getElementById('view-numbers').hidden = v !== 'numbers';
+      renderHeroStats();
+      if (v === 'games') { renderFilters(); renderGames(); } else { renderNumbers(); }
+    }
+
+    window.addEventListener('hashchange', renderAll);
+
+    document.getElementById('filters').addEventListener('click', e => {
+      const b = e.target.closest('[data-grade]'); if (!b) return;
+      state.grade = b.dataset.grade; renderFilters(); renderGames();
+    });
+    document.getElementById('sort').addEventListener('change', e => { state.sort = e.target.value; renderGames(); });
+    document.getElementById('grid').addEventListener('click', e => {
+      const r = e.target.closest('[data-rate]'); if (r) return rateGame(r.dataset.rate, Number(r.dataset.stars));
+      const p = e.target.closest('[data-play]'); if (p) recordPlay(p.dataset.play);
+    });
+
+    document.getElementById('demoBanner').hidden = !DEMO;
+    load().then(renderAll);
+    if (!DEMO) setInterval(() => load().then(renderAll), 60000);
+  </script>
+</body>
+</html>
